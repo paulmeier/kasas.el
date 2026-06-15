@@ -190,7 +190,7 @@ chart is scoped to matching transactions; otherwise all transactions are used."
 
 (defun kasas-plot--refresh ()
   "Re-run the current plot buffer's builder against fresh data."
-  (when-let ((buffer (get-buffer kasas-plot-buffer-name)))
+  (when-let* ((buffer (get-buffer kasas-plot-buffer-name)))
     (with-current-buffer buffer
       (when (functionp kasas-plot--builder)
         (funcall kasas-plot--builder)))))

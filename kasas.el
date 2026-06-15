@@ -300,7 +300,7 @@ supplied, is called with an error object; otherwise the error is reported with
      (lambda (event-status)
        (let ((buffer (current-buffer)))
          (unwind-protect
-             (if-let ((err (plist-get event-status :error)))
+             (if-let* ((err (plist-get event-status :error)))
                  (if error-callback (funcall error-callback err)
                    (message "kasas: %S" err))
                (condition-case err
