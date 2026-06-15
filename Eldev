@@ -1,0 +1,20 @@
+; -*- mode: emacs-lisp; lexical-binding: t -*-
+
+;; Eldev project file for kasas.el <https://emacs-eldev.github.io/eldev/>.
+;; The Makefile is the canonical entry point and needs nothing but Emacs;
+;; Eldev is offered as a convenience for contributors who already use it
+;; (`eldev test', `eldev lint', `eldev compile').
+
+(eldev-use-package-archive 'gnu-elpa)
+(eldev-use-package-archive 'nongnu-elpa)
+(eldev-use-package-archive 'melpa)
+
+(setf eldev-project-main-file "kasas.el")
+
+;; gptel is an optional runtime dependency exercised only when present; pull it
+;; in for compilation and linting so those steps see real definitions.
+(eldev-add-extra-dependencies 'test 'gptel)
+(eldev-add-extra-dependencies 'build 'gptel)
+
+;; Treat byte-compilation warnings as failures, matching CI.
+(setf eldev-build-treat-warnings-as-errors t)

@@ -1,0 +1,17 @@
+# Byte-compiled Emacs Lisp
+*.elc
+
+# Eldev
+/.eldev/
+/Eldev-local
+
+# Package build artifacts
+/dist/
+*-autoloads.el
+/.cask/
+
+# Editor / OS noise
+*~
+\#*\#
+.\#*
+.DS_Store
