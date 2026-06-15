@@ -58,8 +58,6 @@ git push origin 0.1.0
 
 ## Notes
 
-- `gptel` is an *optional* runtime dependency. `kasas-gptel.el` loads it with
-  `(require 'gptel nil t)` and `declare-function`s the symbols it uses, so it is
-  deliberately **not** listed in `Package-Requires` and `package-lint` does not
-  flag it.
-- The only hard requirement is `(emacs "27.1")`, declared in `kasas.el`.
+- The package has no third-party dependencies; the only requirement is
+  `(emacs "27.1")`, declared in `kasas.el`. LLM access is handled by the kasas
+  server's built-in MCP server, not by this package.

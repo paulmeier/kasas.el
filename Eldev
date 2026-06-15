@@ -11,10 +11,5 @@
 
 (setf eldev-project-main-file "kasas.el")
 
-;; gptel is an optional runtime dependency exercised only when present; pull it
-;; in for compilation and linting so those steps see real definitions.
-(eldev-add-extra-dependencies 'test 'gptel)
-(eldev-add-extra-dependencies 'build 'gptel)
-
 ;; Treat byte-compilation warnings as failures, matching CI.
 (setf eldev-build-treat-warnings-as-errors t)
