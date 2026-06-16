@@ -40,7 +40,9 @@
 ;;   * `kasas-transactions' -- browse and search transactions;
 ;;   * `kasas-events'       -- follow the live event stream;
 ;;   * `kasas-plot'         -- realtime graphical displays via Org's gnuplot
-;;                             integration (`org-plot').
+;;                             integration (`org-plot');
+;;   * `kasas-server'       -- download/install the kasas server binary and run
+;;                             it from Emacs (`kasas-install', `kasas-server-start').
 ;;
 ;; Quick start:
 ;;

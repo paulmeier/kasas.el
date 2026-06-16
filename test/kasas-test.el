@@ -14,6 +14,7 @@
 (require 'ert)
 (require 'kasas)
 (require 'kasas-plot)
+(require 'kasas-server)
 
 ;;;; URL and query building
 
@@ -121,6 +122,60 @@
     (should (= (cdr (assoc "(none)" agg)) 20.0))
     ;; sorted descending by total
     (should (>= (cdr (nth 0 agg)) (cdr (nth 1 agg))))))
+
+;;;; Server install / configure helpers
+
+(ert-deftest kasas-test-server-platform ()
+  (should (equal (kasas-server--platform 'gnu/linux "x86_64-pc-linux-gnu")
+                 '("linux" . "amd64")))
+  (should (equal (kasas-server--platform 'darwin "aarch64-apple-darwin")
+                 '("darwin" . "arm64")))
+  (should (equal (kasas-server--platform 'darwin "x86_64-apple-darwin18.7.0")
+                 '("darwin" . "amd64")))
+  ;; Unsupported OS and architecture both signal.
+  (should-error (kasas-server--platform 'windows-nt "x86_64-w64-mingw32"))
+  (should-error (kasas-server--platform 'gnu/linux "i686-pc-linux-gnu")))
+
+(ert-deftest kasas-test-server-setting-env-name ()
+  (should (equal (kasas-server--setting-env-name "server.addr") "KASAS_SERVER_ADDR"))
+  (should (equal (kasas-server--setting-env-name "plugins.net.timeout")
+                 "KASAS_PLUGINS_NET_TIMEOUT")))
+
+(ert-deftest kasas-test-server-env ()
+  (let ((kasas-server-settings '(("server.addr" . ":9000")
+                                 ("log.level" . "debug"))))
+    (should (equal (kasas-server--env)
+                   '("KASAS_SERVER_ADDR=:9000" "KASAS_LOG_LEVEL=debug"))))
+  (let ((kasas-server-settings nil))
+    (should (equal (kasas-server--env) nil))))
+
+(ert-deftest kasas-test-server-asset-urls ()
+  (let ((release
+         '(:tag_name "v2.0.0"
+           :assets [(:name "kasas_2.0.0_linux_amd64.tar.gz"
+                     :browser_download_url "https://x/linux.tar.gz")
+                    (:name "kasas_2.0.0_linux_amd64.tar.gz.sha256"
+                     :browser_download_url "https://x/linux.tar.gz.sha256")
+                    (:name "kasas_2.0.0_darwin_arm64.tar.gz"
+                     :browser_download_url "https://x/darwin.tar.gz")])))
+    (should (equal (kasas-server--asset-urls release "linux" "amd64")
+                   '("https://x/linux.tar.gz" . "https://x/linux.tar.gz.sha256")))
+    ;; A platform with a tarball but no checksum returns a nil cdr.
+    (should (equal (kasas-server--asset-urls release "darwin" "arm64")
+                   '("https://x/darwin.tar.gz" . nil)))
+    ;; A platform with no tarball signals.
+    (should-error (kasas-server--asset-urls release "windows" "amd64"))))
+
+(ert-deftest kasas-test-server-configure ()
+  (let ((kasas-server-settings nil))
+    (kasas-server-configure "server.addr" ":9000")
+    (should (equal (cdr (assoc "server.addr" kasas-server-settings)) ":9000"))
+    ;; Re-setting replaces rather than duplicates.
+    (kasas-server-configure "server.addr" ":7000")
+    (should (equal kasas-server-settings '(("server.addr" . ":7000"))))
+    ;; An empty value clears the override.
+    (kasas-server-configure "server.addr" "")
+    (should (equal kasas-server-settings nil))))
 
 (provide 'kasas-test)
 
