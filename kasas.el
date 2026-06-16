@@ -40,9 +40,7 @@
 ;;   * `kasas-transactions' -- browse and search transactions;
 ;;   * `kasas-events'       -- follow the live event stream;
 ;;   * `kasas-plot'         -- realtime graphical displays via Org's gnuplot
-;;                             integration (`org-plot'); and
-;;   * `kasas-gptel'        -- expose your ledger to the gptel LLM client as
-;;                             callable tools.
+;;                             integration (`org-plot').
 ;;
 ;; Quick start:
 ;;

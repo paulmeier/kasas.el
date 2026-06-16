@@ -14,16 +14,17 @@
 
 kasas.el browses your [kasas](https://github.com/paulmeier/kasas) ledger from
 inside Emacs — accounts, transactions, search, labels, and a live event tail —
-over the kasas REST API. On top of the basics it adds two things Emacs is
+over the kasas REST API. On top of the basics it adds something Emacs is
 uniquely good at:
 
-- 🤖 **[gptel](https://github.com/karthink/gptel) tools** — expose your ledger to
-  an LLM as read-only, callable tools, so you can ask *"how much did I spend on
-  groceries last month?"* and the model fetches the **real numbers** instead of
-  hallucinating them.
 - 📈 **Realtime [org-plot](https://orgmode.org/manual/Org-Plot.html) charts** —
   render spending and balance charts as live Org documents that refresh
   themselves as your ledger changes.
+
+> **Want LLM access to your ledger?** The kasas server ships a built-in
+> [MCP server](https://github.com/paulmeier/kasas), so any MCP-capable client
+> (including Emacs LLM clients like gptel) can query your finances directly —
+> point it at kasas rather than wiring tools through this package.
 
 > **Free forever, MIT licensed.** kasas.el is and always will be free software
 > under the [MIT License](LICENSE).
@@ -34,8 +35,7 @@ uniquely good at:
   built-in `url`, `json`, and `tabulated-list`).
 - A reachable **kasas** server (`docker compose up`, or a binary — see the
   [kasas quick start](https://github.com/paulmeier/kasas#quick-start)).
-- **Optional:** [`gptel`](https://github.com/karthink/gptel) for the LLM
-  integration, and a **`gnuplot`** binary on `PATH` for the plotting commands.
+- **Optional:** a **`gnuplot`** binary on `PATH` for the plotting commands.
 
 ## Installation
 
@@ -94,7 +94,6 @@ machine localhost:8080 login kasas password kasas_XXXXXXXXXXXX
 | `M-x kasas-events-follow` | Follow the live event stream. |
 | `M-x kasas-plot-spending-by-label` | Bar chart of spending grouped by a label. |
 | `M-x kasas-plot-account-balance` | Cumulative net-flow chart for an account. |
-| `M-x kasas-gptel-ask` | Ask a natural-language question about your finances. |
 
 ### Browsing & searching
 
@@ -132,22 +131,14 @@ It re-fetches and re-renders every `kasas-plot-refresh-interval` seconds, and �
 if you are following the event stream with `kasas-events-follow` — also the
 instant a relevant change lands.
 
-### Asking your ledger with gptel
+### Asking your ledger with an LLM
 
-```elisp
-(require 'kasas-gptel)
-(kasas-gptel-setup)   ; register the kasas tools with gptel
-```
-
-Then enable tool use in your gptel session, or just:
-
-```elisp
-M-x kasas-gptel-ask RET how much did I spend on groceries last month? RET
-```
-
-The model can call these **read-only** tools: `kasas_search_transactions`,
-`kasas_list_accounts`, `kasas_account_transactions`, `kasas_list_labels`, and
-`kasas_sync_status`. It can inspect your finances but never mutate them.
+LLM access lives in the kasas server, not this package: kasas exposes a built-in
+**MCP server** over your ledger, so any MCP-capable client can query it with
+read-only tools. Point your client (gptel, Claude, etc.) at the kasas MCP
+endpoint — see the [kasas docs](https://github.com/paulmeier/kasas) — and ask
+*"how much did I spend on groceries last month?"* with the model fetching the
+real numbers itself.
 
 ## Library API
 

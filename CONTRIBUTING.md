@@ -11,7 +11,6 @@ the conventions we follow.
 - **GNU Make** — drives every check via `emacs --batch`.
 - **Optional, for exercising the integrations:**
   - [`gnuplot`](http://gnuplot.info) on `PATH` — for the `kasas-plot-*` commands.
-  - [`gptel`](https://github.com/karthink/gptel) — for the LLM tools.
   - A running [kasas](https://github.com/paulmeier/kasas) server — for manual,
     end-to-end testing (the automated tests do not need one).
 
@@ -42,7 +41,6 @@ emacs -Q -L . -l kasas.el --eval '(progn (setq kasas-base-url "http://localhost:
 | `kasas-transactions.el` | The transactions browser + search + label drill-down. |
 | `kasas-events.el` | The live event-stream tail (polling, like the kasas dashboard). |
 | `kasas-plot.el` | Realtime charts via `org-plot`. |
-| `kasas-gptel.el` | Read-only gptel tools over the ledger. |
 | `test/` | ERT tests and the batch runners for `checkdoc` / `package-lint`. |
 
 It is a **multi-file package**: only `kasas.el` carries the `Version` and
@@ -63,7 +61,7 @@ make lint       # package-lint (installs it from MELPA on demand)
 
 - **`compile`** runs with `byte-compile-error-on-warn` — a warning fails the
   build, so keep the byte-compiler quiet (use `declare-function` for optional
-  dependencies like gptel, and `defvar` for special variables).
+  dependencies, and `defvar` for special variables).
 - **`test`** runs against the pure, server-independent helpers. Add a test for
   any new aggregation, parser, or formatter.
 - The CI matrix exercises Emacs **27.2, 28.2, 29.4, and snapshot**, so avoid
@@ -76,10 +74,10 @@ entry point and needs nothing but Emacs.
 ## Conventions
 
 - **Naming.** Public symbols are prefixed `kasas-`; internal ones `kasas--`.
-  Feature modules may use their own prefix (`kasas-plot-`, `kasas-gptel-`).
-- **No hard dependencies in the core.** Optional integrations (`gptel`,
-  `gnuplot`) must degrade gracefully — soft-`require`, `declare-function`, and a
-  clear `user-error` when the dependency is missing.
+  Feature modules may use their own prefix (`kasas-plot-`).
+- **No hard dependencies in the core.** Optional integrations (e.g. `gnuplot`)
+  must degrade gracefully — soft-`require`, `declare-function`, and a clear
+  `user-error` when the dependency is missing.
 - **Money is never a float.** kasas returns exact decimal strings; keep them as
   strings for display (`kasas-format-amount`) and only parse to a number
   (`kasas-parse-amount`) for charts and aggregation.

@@ -1,0 +1,2 @@
+(kasas :fetcher github
+       :repo "paulmeier/kasas.el")
