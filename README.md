@@ -72,6 +72,11 @@ git clone https://github.com/paulmeier/kasas.el ~/.emacs.d/site-lisp/kasas.el
 | `kasas-use-auth-source` | `t` | Fall back to `auth-source` to resolve the token. |
 | `kasas-default-limit` | `100` | Default page size for list endpoints. |
 | `kasas-currency-symbol` | `$` | Symbol used when formatting amounts for display. |
+| `kasas-install-directory` | `~/.emacs.d/kasas/` | Where `kasas-install` puts the server binary. |
+| `kasas-server-executable` | `nil` | Explicit path to the server binary (else auto-detected). |
+| `kasas-server-settings` | `nil` | Alist of dotted settings applied (as `KASAS_*`) at server start. |
+| `kasas-server-config-file` | `nil` | TOML config passed to the server with `-config`. |
+| `kasas-server-repository` | `paulmeier/kasas` | GitHub repo `kasas-install` downloads releases from. |
 
 A kasas server with **no token configured** accepts unauthenticated requests, so
 for a local instance you may not need a token at all. When the server *is*
@@ -94,6 +99,9 @@ machine localhost:8080 login kasas password kasas_XXXXXXXXXXXX
 | `M-x kasas-events-follow` | Follow the live event stream. |
 | `M-x kasas-plot-spending-by-label` | Bar chart of spending grouped by a label. |
 | `M-x kasas-plot-account-balance` | Cumulative net-flow chart for an account. |
+| `M-x kasas-install` | Download, verify, and install the kasas **server** binary. |
+| `M-x kasas-server-configure` | Set a server setting (applied when the server starts). |
+| `M-x kasas-server-start` / `kasas-server-stop` / `kasas-server-restart` | Run the server from Emacs. |
 
 ### Browsing & searching
 
@@ -130,6 +138,42 @@ M-x kasas-plot-auto-refresh-mode
 It re-fetches and re-renders every `kasas-plot-refresh-interval` seconds, and —
 if you are following the event stream with `kasas-events-follow` — also the
 instant a relevant change lands.
+
+### Installing & running the server from Emacs
+
+If you run kasas on the same machine as Emacs, this package can fetch, verify,
+configure, and run the **server** for you — no Docker required:
+
+```elisp
+M-x kasas-install        ; download the latest release for your OS/arch
+M-x kasas-server-start   ; run it as an Emacs subprocess
+```
+
+`kasas-install` queries GitHub for the newest release of `kasas-server-repository`
+(`paulmeier/kasas`), downloads the tarball matching your platform, **verifies it
+against the published SHA-256 checksum** (and refuses to install one it cannot
+verify), and extracts the `kasas` binary into `kasas-install-directory`
+(`~/.emacs.d/kasas/` by default). It needs the `tar` program on `PATH`; only
+GNU/Linux and macOS — the platforms kasas publishes binaries for — are supported.
+
+Configure how the server starts with `kasas-server-configure`, which edits
+`kasas-server-settings` — an alist of dotted setting keys (e.g. `server.addr`,
+`database.path`, `log.level`) that are passed to the server as `KASAS_*`
+environment variables when it starts:
+
+```elisp
+(setq kasas-server-settings
+      '(("server.addr"   . ":8080")
+        ("database.path" . "~/kasas/kasas.db")
+        ("log.level"     . "info")))
+;; …or interactively, with a prefix arg to persist via Customize:
+M-x kasas-server-configure RET server.addr RET :8080 RET
+```
+
+Alternatively point `kasas-server-config-file` at a TOML config and it is passed
+with `-config`. See the [kasas configuration
+docs](https://paulmeier.github.io/kasas/getting-started/configuration/) for the
+full list of keys. Server output is collected in the `*kasas server*` buffer.
 
 ### Asking your ledger with an LLM
 

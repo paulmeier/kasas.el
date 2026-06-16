@@ -5,8 +5,8 @@
 
 EMACS ?= emacs
 # Source files, in dependency order (kasas.el first; it provides the core).
-SRC = kasas.el kasas-accounts.el kasas-transactions.el kasas-events.el \
-      kasas-plot.el
+SRC = kasas.el kasas-server.el kasas-accounts.el kasas-transactions.el \
+      kasas-events.el kasas-plot.el
 TESTS = test/kasas-test.el
 ELC = $(SRC:.el=.elc)
 
